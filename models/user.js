@@ -5,19 +5,28 @@ const user = mongoose.Schema({
         type: String,
         required: true
     },
+    username: {
+        type: String,
+        required: true,
+        unique:true
+    },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        validate: {
+            validator: function (value) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            },
+            message: 'Invalid email format'
+        }
     },
     password: {
         type: String,
         required: true
     },
 
-    token: {
-        type: String,
-        default: ''
-    }
+  
 })
 
 const userModel = mongoose.model('user', user);
