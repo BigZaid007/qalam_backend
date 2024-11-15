@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Category</title>
+</head>
+
+<body>
+    <h1>Add New Category</h1>
+    <form id="addCategoryForm" enctype="multipart/form-data">
+        <label for="name">Category Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br><br>
+
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <br><br>
+
+        <!-- Image preview section -->
+        <div id="imagePreview" style="display: none;">
+            <p>Image Preview:</p>
+            <img id="preview" src="" alt="Image preview" style="max-width: 200px; max-height: 200px;">
+        </div>
+
+        <label for="active">Active:</label>
+        <input type="checkbox" id="active" name="active">
+        <br><br>
+
+        <button type="submit">Add Category</button>
+    </form>
+
+    <script>
+        // Display image preview
+        document.getElementById('image').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form submission with image upload
+        document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('image', document.getElementById('image').files[0]);
+            formData.append('active', document.getElementById('active').checked);
+
+            try {
+                const response = await fetch('/api/category/addCategory', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert('Category added successfully!');
+                    console.log(result); // Log the created category
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.message}`);
+                }
+            } catch (error) {
+                alert('Failed to add category');
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
